@@ -10,7 +10,7 @@
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
-
+ 
 
 import util
 from game import Agent
@@ -144,3 +144,24 @@ class GreedyBustersAgent(BustersAgent):
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
              if livingGhosts[i+1]]
         "*** YOUR CODE HERE ***"
+
+        max_level = []
+        
+        for belief in livingGhostPositionDistributions:
+            max_level.append(belief.argMax())
+
+        goalProbability, goalCoordinate = 0, None
+        for index, coordinate in enumerate(max_level):
+            # checking goal
+            if livingGhostPositionDistributions[index][coordinate] >= goalProbability:
+                goalCoordinate = coordinate
+                goalProbability = livingGhostPositionDistributions[index][coordinate]
+
+        prs = []
+
+        # checking all acitons
+        for action in legal:
+            nextLocation = Actions.getSuccessor(pacmanPosition, action)
+            prs.append((self.distancer.getDistance(nextLocation, goalCoordinate), action))
+            
+        return min(prs)[1]
